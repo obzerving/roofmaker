@@ -7,7 +7,7 @@ Copy roof_maker_start.inx and roof_maker_start.py into your Inkscape user extens
 
 Usage:
 
-See the file [Roof_Maker_Usage.pdf](https://github.com/obzerving/Extruderz/blob/main/Roof_Maker_Usage.pdf) for details.
+See the file [Roof_Maker_Usage.pdf](https://github.com/obzerving/roofmaker/blob/main/Roof_Maker_Usage.pdf) for details.
 
 Note:
 
