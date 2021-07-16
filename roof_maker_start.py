@@ -1,25 +1,3 @@
-#!/usr/bin/env python
-# coding=utf-8
-#
-# Copyright (C) [2021] [Susan Zakar], [sue.zakar@gmail.com]
-#
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 2 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program; if not, write to the Free Software
-# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-#
-'''
-Inkscape extension to help make roof pieces for 3D papercraft designs. It also designs the pieces for dormer windows of several types.
-'''
 import inkex
 import math
 import copy
@@ -93,6 +71,12 @@ class Roofmaker(inkex.EffectExtension):
             help="Extend base of dormer from flush with roof")
         pars.add_argument("--window_frame",type=float,default=0.125,\
             help="Relative thickness of dormer window frame")
+            
+        pars.add_argument("--barn_ratio",type=float,default=0.2,\
+            help="Relative thickness of dormer window frame")
+        pars.add_argument("--barn_depth_ratio",type=float,default=0.4,\
+            help="Relative thickness of dormer window frame")
+        
 
     #draw SVG line segment(s) between the given (raw) points
     def drawline(self, dstr, name, parent, sstr=None):
@@ -721,7 +705,8 @@ class Roofmaker(inkex.EffectExtension):
             no_inset = False
 
         barntype=int(self.options.barn_type) #this is 0 or 1 do not scale
-
+        barnratio=float(self.options.barn_ratio) #percentage, don't scale
+        barndepthratio=float(self.options.barn_depth_ratio) #percentage, don't scale
         if roof_options=='dormer':
             #get dormer params
 
@@ -744,8 +729,8 @@ class Roofmaker(inkex.EffectExtension):
         taba = 45.0
         dashlength = 0.1*scale
         maxedge = 1 *scale
-        barnratio = .2
-        barndepthratio = .5
+        #barnratio = .2
+        #barndepthratio = .5
         fpath=pathStruct() #dormer front/inset path
         fpath.enclosed = True
         fpath1=pathStruct() #dormre front path saved
@@ -1368,9 +1353,15 @@ class Roofmaker(inkex.EffectExtension):
            fpath1string = 'M '+ str(fpath1.path[0].x) + ', '+str(fpath1.path[0].y)
            
            for nd in range(1,len(fpath1.path)-1): 
-                if ((nd==halftab[0]) or (nd==halftab[1])):
-                    tabpt1, tabpt2 = self.makeTab(fpath1, fpath1.path[nd-1], fpath1.path[nd],tabht/2, taba)
-                   
+                if extendbase < tabht:
+                    if ((nd==halftab[0]) or (nd==halftab[1])):
+                        tabpt1, tabpt2 = self.makeTab(fpath1, fpath1.path[nd-1], fpath1.path[nd],tabht/2, taba)
+                        if nd==halftab[0]:
+                            tabpt2.x -= tabht/3
+                        else:
+                            tabpt1.x += tabht/3 
+                    else:
+                        tabpt1, tabpt2 = self.makeTab(fpath1, fpath1.path[nd-1], fpath1.path[nd],tabht, taba)   
                 else:
                     tabpt1, tabpt2 = self.makeTab(fpath1, fpath1.path[nd-1], fpath1.path[nd],tabht, taba)
                 fpath1string +=' L '+str(tabpt1.x)+','+str(tabpt1.y)

@@ -35,16 +35,20 @@
 		</param>
 
 		<param name= "peak_down" indent="1"  type="float" precision="2" min="-99.9" max="99.9" gui-text="Single Peak height reduction">0</param>
-		
-		<param name= "extend_base" indent="1"  type="float" precision="2" min="0" max="9999.0" gui-text="Extend depth of dormer">0</param>
-		
-        <param name="no_base" indent="1" type="optiongroup" appearance="combo" gui-text="Omit base:">
-            <option translatable="no" value="0">No</option>
-            <option translatable="no" value="1">Yes</option>
-		</param
-		<param name= "window_frame" indent="1"  type="float" precision="3" min="0" max="50" gui-text="Dormer pane frame thickness (% of width)">0.125</param>
-		
+
       </page>
+		<page name="_advanced" gui-text="Advanced">
+		
+			<param name= "extend_base" indent="1"  type="float" precision="2" min="0" max="9999.0" gui-text="Extend distance of dormer base from roof">0</param>
+		
+			<param name="no_base" indent="1" type="optiongroup" appearance="combo" gui-text="Omit base:">
+				<option translatable="no" value="0">No</option>
+				<option translatable="no" value="1">Yes</option>
+			</param>
+			<param name= "window_frame" indent="1"  type="float" precision="3" min="0" max="50" gui-text="Dormer pane frame thickness (% of width)">0.125</param>
+			<param name ="barn_ratio" type="float" precision="2" min="0.01" max="1.0" gui-text="Relative barn angle distance down:">0.20</param>
+			<param name="barn_depth_ratio" type="float" precision="2" min=".01" max="1.0" gui-text="Relative barn angle distance out:">0.4</param>
+	  </page>
       <page name="_help" gui-text="Help">
         <label xml:space="preserve">   Basic Roof Settings
 
@@ -69,11 +73,14 @@ Single Peak:  The top will come top a single center peak
 
 Single Peak height reduction: If the dormer is the Single Peak type, then this number can be used to lower the peak to a flatter profile.  Dormer height will remain the same. 
 
+Advanced: 
 Extend depth of dormer: Normally the dormer will be flush to the roof at the base. This amount will be used to allow your dormer base to be outset from the roof.
 
 Omit base:  If using a dormer type other than Just the Base, then you can opt to use only the top  shape of the window.  This will limit your dormer height to the shape of the top of the dormer.  (The calculated height of the dormer top is normally equal to half the width of your dormer.)
 
 Dormer pane frame thickness % : This is how thick you want the "frame" area around the dormer window "glass" pane.  Increase this to have more room for trim, for instance.
+Relative barn angle distance down: On barn type roofs, this affects where the change in the roof angle occurs, as a percentage (downward) of the roof peak height. Smaller numbers will result in the roof angle change occurring higher. 
+Relative barn angle distance out: On barn type roofs, this affects where the change in the roof angle occurs, as a percentage (outward from center) of the roof depth/2. Smaller numbers will result in the roof angle change occurring closer to the middle. 
 
 </label>
       </page>
