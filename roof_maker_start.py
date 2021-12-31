@@ -894,8 +894,13 @@ class Roofmaker(inkex.EffectExtension):
         tmap.append(t)
         return fpathlist,fshortlist,smap,smapr,tmap
 
-    def roofsidenodes(self,halfdepth,side_inset_ht,btx,bty,roofpeak,isbarn):
+    def roofsidenodes(self,halfdepth,side_inset_ht,bbx,bty,roofpeak,isbarn):
         rsidepathlist = []
+        #btx = bdratio*halfdepth  
+        #bty = roofpeak*bhratio  
+        #bbx = halfdepth - btx           
+        #bby = roofpeak-bty   
+        #fixed 12-31-2021
         if  not isbarn: # not a barn
             rsidepath = RNodes(0,0)
             rsidepathlist.append(rsidepath) #0
@@ -913,7 +918,7 @@ class Roofmaker(inkex.EffectExtension):
             rsidepath = RNodes(0,0)
             rsidepathlist.append(rsidepath) #0
             
-            rsidepath = RNodes(btx,bty)
+            rsidepath = RNodes(bbx,bty)
             rsidepathlist.append(rsidepath) #1
             
             rsidepath = RNodes(halfdepth,roofpeak)
@@ -922,7 +927,7 @@ class Roofmaker(inkex.EffectExtension):
             rsidepath = RNodes(-halfdepth,roofpeak)
             rsidepathlist.append(rsidepath) #3
             
-            rsidepath = RNodes(-btx,bty)
+            rsidepath = RNodes(-bbx,bty)
             rsidepathlist.append(rsidepath) #4 
             
             rsidepath = RNodes(0,0) #back to origin
@@ -1103,9 +1108,13 @@ class Roofmaker(inkex.EffectExtension):
         bty = roofpeak*bhratio  
         
         bbx = halfdepth - btx           
-        bby = roofpeak-bty              
-        bt_ln = self.geo_a_b_c(btx,bty) 
-        bb_ln = self.geo_a_b_c(bby,bbx) 
+        bby = roofpeak-bty   
+        if (isbarn):
+            barn_base_angle = self.geo_a_b_alpha(bby, bbx)
+        bt_ln = self.geo_a_b_c(bbx,bty) 
+        #fixed 12-31-2021
+        bb_ln = self.geo_a_b_c( btx,bby) 
+        #fixed 12-31-2021
         bbtoty = bt_ln + bb_ln          
         
         outsetslist = self.outsets(ylist,base_angle,baseht,isabase,sides) #outsets are used in dormer side pieces
@@ -1130,7 +1139,8 @@ class Roofmaker(inkex.EffectExtension):
         
         #ROOF SIDE AND ROOF SIDE DECO
         cutout = 0
-        roofsidelist,roofsidescore,roofsidescore2,roofsidetabs = self.roofsidenodes(halfdepth,side_inset_ht,btx,bty,roofpeak,isbarn)
+        roofsidelist,roofsidescore,roofsidescore2,roofsidetabs = self.roofsidenodes(halfdepth,side_inset_ht,bbx,bty,roofpeak,isbarn)
+        #fixed 12-31-2021
         zerotab = True
         svgroofside = self.stringmeup(roofsidelist,roofsidescore,roofsidescore2,roofsidetabs,zerotab,cutout,roofsidelist,"Side_of_Roof",layer,struct_style,tabht,dashln,tabangle,mkpath)
         svgroofside = self.stringmeup(roofsidelist,roofsidescore,roofsidescore2,roofsidetabs,zerotab,cutout,roofsidelist,"Side_of_Roof2",layer,struct_style,tabht,dashln,tabangle,mkpath)
@@ -1165,7 +1175,9 @@ class Roofmaker(inkex.EffectExtension):
             
             
 
-            #HOLE
+            #HOLE 12-30
+            if (isbarn):
+                base_angle = barn_base_angle
             holepathlist = self.holenodes(xlist,ylist,baseht,basewidth,base_angle,isabase,sides) #hole path
             self.stringmeup(holepathlist,emptyset,emptyset,emptyset,0,0,holepathlist,"Hole",layer,hole_style,tabht,dashln,tabangle,mkpath)
             

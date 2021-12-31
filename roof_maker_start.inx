@@ -100,10 +100,9 @@ Extend depth of dormer: Normally the dormer will be flush to the roof at the bas
 Omit base:  If using a dormer type other than Just the Base, then you can opt to use only the top  shape of the window.  This will limit your dormer height to the shape of the top of the dormer.  (The calculated height of the dormer top is normally equal to half the width of your dormer.)
 
 Dormer pane frame thickness % : This is how thick you want the "frame" area around the dormer window "glass" pane.  Increase this to have more room for trim, for instance.
-Relative barn angle distance down: On barn type roofs, this affects where the change in the roof angle occurs, as a percentage (downward) of the roof peak height. Smaller numbers will result in the roof angle change occurring higher. 
+Relative barn angle distance down: On barn type roofs, this affects where the change in the roof angle occurs, as a percentage (downward) of the roof peak height. Smaller numbers will result in the roof angle change occurring closer to the roof peak.
 
-Relative barn angle distance out: On barn type roofs, this affects where the change in the roof angle occurs, as a percentage (outward from center) of the roof depth/2. Smaller numbers will result in the roof angle change occurring closer to the middle. 
-
+Relative barn angle distance adjust: On barn type roofs, this affects where the change in the roof angle occurs, as a percentage (inward from edge) of the roof depth/2. Larger numbers will bring the change in angle closer to the center.
 		</label>
       </page>
     </param>
