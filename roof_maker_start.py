@@ -95,7 +95,17 @@ class Roofmaker(inkex.EffectExtension):
             help="Roof Base Depth (in Dimensional Units)")
         pars.add_argument("--roofwidth", type=float, default=7.0,\
             help="Roof Base Width (in Dimensional Units)")
-
+        pars.add_argument("--chimney_ht", type=float, default=45.0,\
+            help="Height above roof on peak side")
+            
+        pars.add_argument("--chimney_wd", type=float, default=1.0,\
+            help="width of chimney")
+        pars.add_argument("--chimney_depth", type=float, default=.75,\
+            help="depth of chimney")        
+        pars.add_argument("--off_center", type=float, default=.5,\
+            help="Amount off_center from peak")        
+        pars.add_argument("--shrink",type=float,default=0.67,\
+            help="Reduction amount for chimney tabs and scores")             
         pars.add_argument("--isabase",default="True",\
             help="There is a base on the dormer")
         pars.add_argument("--peak_down",type=float,default=1.0,\
@@ -104,7 +114,7 @@ class Roofmaker(inkex.EffectExtension):
             help="Extend base of dormer from flush with roof")
         pars.add_argument("--window_frame",type=float,default=0.125,\
             help="Relative thickness of dormer window frame")
-            
+
         pars.add_argument("--bhratio",type=float,default=0.2,\
             help="Relative thickness of dormer window frame")
         pars.add_argument("--bdratio",type=float,default=0.4,\
@@ -609,6 +619,11 @@ class Roofmaker(inkex.EffectExtension):
     def geo_c_a_b(self,c,a):
         b= math.sqrt(c**2 - a**2)
         return b
+        
+    def geo_a_alpha_b(self,a, alpha):
+        c=a/math.sin(math.radians(alpha))
+        b= math.sqrt(c**2 - a**2)
+        return b
 
     def nodelocs(self,size,baseht, sides,peakdown):  #dormer top polygon 
         xlist = []
@@ -979,14 +994,103 @@ class Roofmaker(inkex.EffectExtension):
             rpathlist.append(rpath) #5
             rpath = RNodes(0,0)
             rpathlist.append(rpath) #6
-            smap.append(2)
-            smapr.append(5)
+            smap.append(2)   #one end of score mark
+            smapr.append(5)  #other end of score mark
             tmap.append(1)
-            tmap.append(4)
-            
-                
+            tmap.append(4)       
         return rpathlist,smap,smapr, tmap
+        
+    def makeChimney(self,rp,rd,ch,cw,cd,oc):
+        chholelist = []
+        mypath = pathStruct()
+        tmap = [1,2,3,4,5]
+        smap =[1]
+        smapr = [5]
+        chpathlist =[]
+        fslant = 0
+        bslant = 0
+        ra = self.geo_a_b_alpha(rp,rd)	#roof angle
+        ca = 90-ra                      #outside angle
 
+        fsd = oc*cd #proportion toward front.
+        
+        bsd = cd-fsd  #the rest 
+        
+        bsh = self.geo_a_alpha_b(bsd, ca) #back side height
+        
+        fsh = self.geo_a_alpha_b(fsd,ca)  #front side height 
+        
+
+        chhole = RNodes(0,0)
+        chholelist.append(chhole)
+        if fsd> 0:
+            fslant = self.geo_a_b_c(fsd,fsh)
+        if bsd >0:
+           bslant = self.geo_a_b_c(bsd,bsh)
+           chhole = RNodes(bslant,0)
+           chholelist.append(chhole)
+        chhole = RNodes(bslant+fslant, 0)
+        chholelist.append(chhole)
+        chhole = RNodes(bslant+fslant,cw)
+        chholelist.append(chhole)
+        if bsd > 0:
+            chhole = RNodes(bslant,cw)
+            chholelist.append(chhole)
+        chhole = RNodes(0,cw)
+        chholelist.append(chhole)
+        chhole = RNodes(0,0)
+        chholelist.append(chhole)
+        if (bsd > 0) and (fsd >0):
+            chholescore = [1]
+            chholescore2 = [4]
+        
+            
+                   
+        #inkex.utils.debug("ch={}  bsh={}  fsh={}".format(ch,bsh,fsh))
+        cpathx = [0, bsd, cd, cd+cw,  cw+(2*cd)-bsd, (2*cd)+cw, 2*(cd+cw)]
+        cpathy = [ch+bsh,ch,ch+fsh,ch+fsh,ch,ch+bsh,ch+bsh]
+        
+        mypath.path.append(Move(0,0))
+        rpath = RNodes(0,0)
+        chpathlist.append(rpath)
+        
+        plen = len(cpathx)
+        for i in range(1,plen):
+            if cpathx[i]  != mypath.path[-1].x:
+                mypath.path.append(Line(cpathx[i],0))
+                rpath = RNodes(cpathx[i],0)
+                chpathlist.append(rpath)
+                
+        for i in reversed(range(plen)):
+            yp = cpathy[i]
+            if not ((cpathx[i] == mypath.path[-1].x) and  (yp == mypath.path[-1].y)):
+                mypath.path.append(Line(cpathx[i],yp))
+                rpath = RNodes(cpathx[i],yp)
+                chpathlist.append(rpath)
+        #inkex.utils.debug("mypath.path[-2]xy is {},{}".format(mypath.path[-1].x,mypath.path[-1].y))
+        #inkex.utils.debug("chpathlist[-1]xy is {},{}".format(chpathlist[-1].x,chpathlist[-1].y))
+        mypath.path.append(ZoneClose())
+        rpath = RNodes(0,0)
+        chpathlist.append(rpath)
+        #scorelines between 2,3 and 5 if off_center, but only between 1,2,3inkex.utils.debug("len chpathlist is {}".format(len(chpathlist)))
+        if len(chpathlist) == 11:  #this is not off-center
+            smap = [1,2,3]
+            smapr = [8,7,6]
+            tmap = [5,6,7,8,9]
+        else:
+            tmap= [7,8,9,10,11,12,13]
+            smap = [2,3,5]
+            smapr = [11,10,8]
+            
+            
+        #and the hole template:
+        
+        return(chpathlist,smap,smapr,tmap,chholelist,chholescore,chholescore2)
+        
+        
+        
+        
+        
     def roofbasenodes(self,roofwidth,roofdepth):
         smap=[]
         smapr=[]
@@ -1038,8 +1142,11 @@ class Roofmaker(inkex.EffectExtension):
         window_frame = float(self.options.window_frame)
         peakdown= float(self.options.peak_down)
         scoretype = self.options.scoretype
-        
-
+        chimney_ht = float(self.options.chimney_ht)*scale
+        chimney_wd = float(self.options.chimney_wd)*scale
+        chimney_depth =float(self.options.chimney_depth)*scale
+        off_center = float(self.options.off_center)
+        shrink = float(self.options.shrink)
         #Set some defaults
         mincutout = 1*scale
         tabht = 0.25*scale
@@ -1059,6 +1166,7 @@ class Roofmaker(inkex.EffectExtension):
         ylist = []
         outsetslist = []
         rpathlist = []
+        chpathlist =[]
         cutout = 0 
         dmult = 1.04
         sidescores = []
@@ -1196,6 +1304,16 @@ class Roofmaker(inkex.EffectExtension):
                 side_deco_scores2 = sidescores2
                 zerotab = False
             svgside_deco = self.stringmeup(sidepathlist,side_deco_scores,side_deco_scores2,emptyset,zerotab,cutout,sidepathlist,"Dormer_Side_Deco",layer,deco_style,tabht,dashln,tabangle,mkpath)
+            
+        #CHIMNEY
+        
+        if not( (chimney_wd==0) or (chimney_depth==0)):
+            chimneylist,chscores, chscores2,chtabs,chholelist,chholescore,chholescore2=self.makeChimney(roofpeak,roofdepth,chimney_ht,chimney_wd,chimney_depth,off_center)
+            zerotab = False
+            cutout = 0
+            chimneypiece = self.stringmeup(chimneylist,chscores,chscores2, chtabs,zerotab,cutout,sidepathlist,"Chimney",layer,struct_style,tabht*shrink,dashln*shrink,tabangle*shrink,mkpath)
+            chimneypiece2 = self.stringmeup(chimneylist,chscores,chscores2, emptyset,zerotab,cutout,sidepathlist,"Chimneydeco",layer,deco_style,tabht,dashln,tabangle,mkpath)
+            chimneyhole = self.stringmeup(chholelist,chholescore,chholescore2, emptyset,zerotab,cutout,sidepathlist,"Chimneyhole",layer,hole_style,tabht,dashln,tabangle,mkpath)
+            
 if __name__ == '__main__':
     Roofmaker().run()
-

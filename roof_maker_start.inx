@@ -22,7 +22,7 @@
         <param name ="roofwidth" type="float" precision="2" min="0.1" max="9999.0" gui-text="Roof Base Width (in Dimensional Units):">7.0</param>
         <param name ="roofdepth" type="float" precision="2" min="0.1" max="9999.0" gui-text="Roof Base Depth (in Dimensional Units):">3.0</param>
         <param name ="roofpeak" type="float" precision="2" min="0.1" max="9999.0" gui-text="Roof Peak Height (in Dimensional Units):">2.0</param>
-        <param name ="roof_inset" type="float" precision="2" min="0.0" max="9999.0" gui-text="Roof Inset (in Dimensional Units):">1.0</param>
+        <param name ="roof_inset" type="float" precision="2" min="-9999.0" max="9999.0" gui-text="Roof Inset (in Dimensional Units):">0.0</param>
 		
 		<param name = "isbarn" type="optiongroup" appearance="combo" gui-text="Roof Style" >
 			<option translatable="no" value="False">Normal</option>
@@ -59,6 +59,13 @@
 			<param name ="bhratio" type="float" precision="2" min="0.01" max="1.0" gui-text="Relative barn angle distance down:">0.20</param>
 			
 			<param name="bdratio" type="float" precision="2" min=".01" max="1.0" gui-text="Relative barn angle distance out:">0.4</param>
+	  </page>
+	  <page name="Chimney" gui-text="Chimney">
+		<param name="chimney_ht"    type="float" precision="3" min="0.0" max="9999.0" gui-text="Chimney height above roof(top side)">1.0</param>
+		<param name="chimney_wd"    type="float" precision="3" min="0.0" max="9999.0" gui-text="Chimney width">2</param>
+		<param name="chimney_depth" type="float" precision="3" min="0.0" max="9999.0" gui-text="Chimney depth">1.5</param>
+		<param name="off_center"    type="float" precision="3" min="0.0" max="1.0"    gui-text="Offset over peak">.2</param>
+		<param name="shrink"    type="float" precision="3" min="0.0" max="90"    gui-text="Tab/Score shrink">.67</param>
 	  </page>
       <page name="_help" gui-text="Help: Roof">
         <label xml:space="preserve">  Roof Help
@@ -103,6 +110,24 @@ Dormer pane frame thickness % : This is how thick you want the "frame" area arou
 Relative barn angle distance down: On barn type roofs, this affects where the change in the roof angle occurs, as a percentage (downward) of the roof peak height. Smaller numbers will result in the roof angle change occurring closer to the roof peak.
 
 Relative barn angle distance adjust: On barn type roofs, this affects where the change in the roof angle occurs, as a percentage (inward from edge) of the roof depth/2. Larger numbers will bring the change in angle closer to the center.
+		</label>
+      </page>
+	  <page name="_help3" gui-text="Help:Chimney">
+        <label xml:space="preserve">   Chimney Help
+To build a chimney that sits on the roof:
+
+Chimney depth is the front to back measurement
+
+Chimney width is the left to right measurement
+
+If either chimney depth or chimney height is zero, then no chimney will be built.
+Chimney height is the measurment from the roof to the top of the chimney. This is the measurement from the highest point that the roof intersects the chimney, to the top of the chimney. For example if your chimney crosses the peak, and you have a height of 1 inch, the top of your chimney will be 1 inch above your peak. 
+
+Offset over peak  is how much of the roof you want to be across the peak to the front of the roof.  Example: 0 -- none, .5 -- halfway, 1 -- all.  
+
+Shrink is used to adjust the tabs/scores when acute angles cause an overlap. Defaults to .67
+
+Use the chimney hole piece as a template to cut out from your decorative (and optionally, your structure) paper to allow the tabs to be hidden when attaching the chimney.  The scorelines (if any) will align with the peak.
 		</label>
       </page>
     </param>
