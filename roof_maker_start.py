@@ -1180,7 +1180,10 @@ class Roofmaker(inkex.EffectExtension):
             baseht = dormerht
         else:
             dodormers = True
-            baseht = dormerht - .5*basewidth
+            if (sides > 0):
+                baseht = dormerht - .5*basewidth
+            else:
+                baseht = dormerht
             dhalfwidth = .5*basewidth
            
          
@@ -1311,9 +1314,9 @@ class Roofmaker(inkex.EffectExtension):
             chimneylist,chscores, chscores2,chtabs,chholelist,chholescore,chholescore2=self.makeChimney(roofpeak,roofdepth,chimney_ht,chimney_wd,chimney_depth,off_center)
             zerotab = False
             cutout = 0
-            chimneypiece = self.stringmeup(chimneylist,chscores,chscores2, chtabs,zerotab,cutout,sidepathlist,"Chimney",layer,struct_style,tabht*shrink,dashln*shrink,tabangle*shrink,mkpath)
-            chimneypiece2 = self.stringmeup(chimneylist,chscores,chscores2, emptyset,zerotab,cutout,sidepathlist,"Chimneydeco",layer,deco_style,tabht,dashln,tabangle,mkpath)
-            chimneyhole = self.stringmeup(chholelist,chholescore,chholescore2, emptyset,zerotab,cutout,sidepathlist,"Chimneyhole",layer,hole_style,tabht,dashln,tabangle,mkpath)
+            chimneypiece = self.stringmeup(chimneylist,chscores,chscores2, chtabs,zerotab,cutout,chimneylist,"Chimney",layer,struct_style,tabht*shrink,dashln*shrink,tabangle*shrink,mkpath)
+            chimneypiece2 = self.stringmeup(chimneylist,chscores,chscores2, emptyset,zerotab,cutout,chimneylist,"Chimneydeco",layer,deco_style,tabht,dashln,tabangle,mkpath)
+            chimneyhole = self.stringmeup(chholelist,chholescore,chholescore2, emptyset,zerotab,cutout,chholelist,"Chimneyhole",layer,hole_style,tabht,dashln,tabangle,mkpath)
             
 if __name__ == '__main__':
     Roofmaker().run()
